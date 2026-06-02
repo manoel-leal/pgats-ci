@@ -42,3 +42,9 @@ jobs:
             # executar os testes e2e
             - name: Executando testes e2e
               run: yarn run e2e
+                 # resumo do relatório
+
+            # publicar relatorio
+            - name: Publicar resumo dos testes
+              if: always()
+              uses: daun/playwright-report-summary@v3
