@@ -51,3 +51,18 @@ jobs:
               with:
                 name: playwright-report
                 path: playwright-report/
+
+    deploy-report:
+        if: always()
+        needs: e2e-tests
+
+        runs-on: ubuntu-latest
+
+        environment:
+          name: github-pages
+          url: ${{ steps.deployment.outputs.page_url }}
+
+        steps:
+          - name: Deploy para GitHub Pages
+            id: deployment
+            uses: actions/deploy-pages@v4
