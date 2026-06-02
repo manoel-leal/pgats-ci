@@ -48,3 +48,5 @@ jobs:
             - name: Publicar resumo dos testes
               if: always()
               uses: daun/playwright-report-summary@v3
+              with:
+                 report-file: playwright-report/index.html
