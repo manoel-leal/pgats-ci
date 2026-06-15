@@ -10,7 +10,7 @@ on:
     schedule:
     # Cronograma de execução
     # 1 - Minuto, 2 - hora, 3 - dia do mês, 4 mês, 5 - dia da semana
-    - cron: '0 0 * * 0'
+    - cron: '*/5 * * * *'
 
 # permissões necessarias para o job deploy-report
 permissions:
