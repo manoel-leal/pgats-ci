@@ -8,6 +8,11 @@ name: 'Execução Integrada'
 on:
   workflow_dispatch:
 
+  # executa o pipeline toda vez que tiver um push na branch master
+  push:
+    branches: 
+      - master
+
 # permissões necessárias para o job deploy-report
 permissions:
   contents: read
