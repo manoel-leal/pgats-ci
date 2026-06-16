@@ -10,7 +10,7 @@ on:
 
   # executa o pipeline toda vez que tiver um push na branch master
   push:
-    branches: 
+    branches:
       - master
 
 # permissões necessárias para o job deploy-report
