@@ -1,0 +1,121 @@
+# CI de Nível 03 - Disparo após a conclusão de outra pipeline
+
+# nome da pipeline
+name: "Execução Integrada"
+
+# gatilhos / triggers - regras de disparo
+# gatilho manual = workflow_dispatch
+
+on:
+    workflow_dispatch:
+
+# permissões necessarias para o job deploy-report
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+#tarefas dentro da pipeline = jobs
+
+jobs:
+    #nome do job
+    inspecao:
+        # maquina onde o job vai rodar
+        runs-on: ubuntu-latest
+
+        # passos do job
+        steps:
+            # clone do projeto
+            - uses: actions/checkout@v4
+
+            # instalção do node
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24.x
+
+            # instalação do Yarn
+            - name: Instalando Yarn
+              run: npm install -g yarn
+            
+            #   instalação das dependências
+            - name: Instalando dependências
+              run: yarn
+
+            # Inspeção de código
+            - name: Inspeção de código
+              run: yarn lint
+    
+    unidade: 
+
+        runs_on: ubuntu-latest
+        needs: [inspecao]
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24.x
+            
+            - name: Instalando Yarn
+              run: npm install -g yarn
+            
+            - name: Instalando dependências
+              run: yarn
+            
+            - name: Rodando testes unitários
+              run: yarn run test
+
+
+    e2e-tests:
+        # maquina onde o job vai rodar
+        runs-on: ubuntu-latest
+
+        # passos do job
+        steps:
+            # clone do projeto
+            - uses: actions/checkout@v4
+
+            # instalção do node
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24.x
+
+            # instalação do Yarn
+            - name: Instalando Yarn
+              run: npm install -g yarn
+            
+            #   instalação das dependências
+            - name: Instalando dependências
+              run: yarn
+
+            # instalação dos Browsers do Playwright
+            - name: Instalando Browsers do Playwright
+              run: yarn playwright install
+            
+            # executar os testes e2e
+            - name: Executando testes e2e
+              run: yarn run e2e
+          
+
+            # publicar relatorio
+            - name: Upload Playwright Report para Pages
+              if: always()
+              uses: actions/upload-pages-artifact@v3
+              with:
+                path: playwright-report
+
+    deploy-report:
+        if: always()
+        needs: e2e-tests
+
+        runs-on: ubuntu-latest
+
+        environment:
+          name: github-pages
+          url: ${{ steps.deployment.outputs.page_url }}
+
+        steps:
+          - name: Deploy para GitHub Pages
+            id: deployment
+            uses: actions/deploy-pages@v4
